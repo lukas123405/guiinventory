@@ -1,0 +1,8 @@
+name: guiinventory
+version: 0.3
+main: me.Inted.guiinventory.main
+author: Inted
+commands:
+     guiinventory:
+          description:
+          usage: /<command>
