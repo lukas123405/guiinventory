@@ -8,8 +8,6 @@ import java.util.List;
 
 import me.Inted.guiinventory.listener.commandlistener;
 import me.Inted.guiinventory.listener.inventoryclicklistener;
-import me.Inted.guiinventory.listener.signclicklistener;
-import me.Inted.guiinventory.listener.signcreatelistener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,8 +31,6 @@ public class main extends JavaPlugin{
 		loadConfig();
 		new commandlistener(this);
 		new inventoryclicklistener(this);
-		new signclicklistener(this);
-		new signcreatelistener(this);	
 	}
 	
 	@Override
