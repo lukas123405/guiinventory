@@ -52,6 +52,7 @@ public class guiinventory {
 		return command;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void loadConfig(){
 		//inventories = new ArrayList<guiinventory>();
 		file = new File(plugin.getDataFolder() + "/inventories", name + ".yml");
@@ -91,7 +92,14 @@ public class guiinventory {
 			
 			ItemStack is = null;
 			try{
-			is = new ItemStack(Material.getMaterial(Integer.parseInt(iteminfos[0])), Integer.parseInt(iteminfos[1]));
+				String[] data = iteminfos[0].split("_");
+				if(data.length == 2){
+					is = new ItemStack(Material.getMaterial(Integer.parseInt(data[0])), Integer.parseInt(iteminfos[1]), Short.parseShort(data[1]));
+				}
+				else
+				{
+					is = new ItemStack(Material.getMaterial(Integer.parseInt(iteminfos[0])), Integer.parseInt(iteminfos[1]));
+				}
 			}catch (NumberFormatException nfe)
 			{
 			System.out.println(ChatColor.RED + "[GuiInventory] Der " + slot + " ist beschädigt.");

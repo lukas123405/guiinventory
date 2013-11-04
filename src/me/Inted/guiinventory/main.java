@@ -51,6 +51,27 @@ public class main extends JavaPlugin{
 				sender.sendMessage(ChatColor.GREEN + "[GuiInventory] " + ChatColor.WHITE + "Das Plugin wurde neu geladen");
 				return true;
 			}
+			if(args[0].equalsIgnoreCase("console")){
+				if(!sender.hasPermission("guiinventory.console")){
+					sender.sendMessage(ChatColor.RED + "Du hast keine Rechte das zu tun.");
+					return true;
+				}
+				if(args.length < 3){
+					sender.sendMessage("Zu wenig Argumente");
+					return true;
+				}
+				if(args.length > 3){
+					sender.sendMessage("Zu viele Argumente");
+					return true;
+				}
+				if(!this.getServer().getPlayer(args[1]).hasPermission("guiinventory." + args[2])){
+					sender.sendMessage("Der Spieler hat keine Rechte das zu tun.");
+					return true;
+				}
+				this.getServer().getPlayer(args[1]).chat("/" + args[2]);
+				
+				
+			}
 			
 		}
 		return false;
@@ -89,7 +110,7 @@ public class main extends JavaPlugin{
 			String command = cfg.getString("inventories." + inventory + ".command");
 			int size = cfg.getInt("inventories." + inventory + ".size");
 			
-			if(size > 6 || size < 1)
+			if(size > 10 || size < 1)
 			{
 				size = 1;
 				cfg.set("inventories." + inventory + ".size", 1);

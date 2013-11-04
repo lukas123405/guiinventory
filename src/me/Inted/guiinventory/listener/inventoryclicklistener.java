@@ -1,20 +1,22 @@
-package me.Inted.guiinventory.listener;
+ package me.Inted.guiinventory.listener;
 
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import me.Inted.guiinventory.guiinventory;
 import me.Inted.guiinventory.main;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 
 
 
@@ -28,6 +30,7 @@ public class inventoryclicklistener implements Listener{
 	public inventoryclicklistener(main plugin){
 		this.plugin = plugin;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+		
 	}
 	
 	@EventHandler
@@ -44,16 +47,11 @@ public class inventoryclicklistener implements Listener{
 		if(event.getCurrentItem() == null){
 			return;
 		}
-		if(event.getCurrentItem().getType() == Material.AIR)
-        {
-        	return;
-        }
 		
-		Inventory inv = Inventar.getInventory();
-		if(!inv.contains(event.getCurrentItem())){
+		event.setCancelled(true);
+		if(event.getClickedInventory().equals(event.getWhoClicked().getInventory())){
 			return;
 		}
-		event.setCancelled(true);
 		file = new File(plugin.getDataFolder() + "/inventories",Inventar.getName() + ".yml");
 		cfg = YamlConfiguration.loadConfiguration(file);
 		if(!file.exists())
@@ -62,6 +60,9 @@ public class inventoryclicklistener implements Listener{
 		cfg.addDefault(Inventar.getName() + ".slot1.action", "");
 		cfg.options().copyDefaults(true);
 		saveConfig();
+		}
+		if(cfg.getString(Inventar.getName() + ".slot" + event.getSlot() + ".action") == null){
+			return;
 		}
 		if(cfg.getString(Inventar.getName() + ".slot" + event.getSlot() + ".action").equalsIgnoreCase(""))
 		{
@@ -79,6 +80,7 @@ public class inventoryclicklistener implements Listener{
 			if(action[0].equalsIgnoreCase("command")){
 			Player p = ((Player)event.getWhoClicked());
 			plugin.getServer().dispatchCommand((Player)event.getWhoClicked(), action[1].replaceAll("@p",p.getName()).trim().substring(1));
+			log(event.getWhoClicked().getName() + ":" +action[1].replaceAll("@p",p.getName()).trim().substring(1));
 			}else if(action[0].equalsIgnoreCase("console")){
 				Player p = ((Player)event.getWhoClicked());
 				plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), action[1].replaceAll("@p",p.getName()).trim().substring(1));
@@ -100,6 +102,9 @@ public class inventoryclicklistener implements Listener{
 				p.sendMessage(ChatColor.translateAlternateColorCodes('&', text));
 			}else if(action[0].equalsIgnoreCase("broadcast")){
 				plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', replace(action[1].trim(),(Player)event.getWhoClicked())));
+			}else if(action[0].equalsIgnoreCase("log")){
+			System.out.println(replace(action[1].trim(),(Player)event.getWhoClicked()));
+			log(replace(action[1].trim(),(Player)event.getWhoClicked()));
 			}
 			else{
 			event.getWhoClicked().closeInventory();
@@ -118,6 +123,23 @@ public class inventoryclicklistener implements Listener{
 	
 	public String replace (String text, Player p){
 		return ChatColor.translateAlternateColorCodes('&', text.replaceAll("@p", p.getName()));
+	}
+	
+	public void log(String message){
+		
+		try{
+			
+			File saveTo = new File(plugin.getDataFolder(), "guiinventory.log");
+			FileWriter fw = new FileWriter(saveTo, true);
+			PrintWriter pw = new PrintWriter(fw);
+			Calendar cal = Calendar.getInstance();
+		    SimpleDateFormat formater = new SimpleDateFormat();
+			pw.println(formater.format(cal.getTime()) + " [INFO] " + message);
+			pw.flush();
+			pw.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 	
 	
